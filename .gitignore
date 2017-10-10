@@ -1,2 +1,4 @@
+dist
 env
 __pycache__
+hobbit.egg-info

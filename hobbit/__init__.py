@@ -17,12 +17,12 @@ __version__ = '0.0.1a0'
 
 
 """
-                                            Habbit.
+                                            Hobbit.
 ==================================================================================================
 """
 
 
-class Habbit:
+class Hobbit:
     """Class performs scraping."""
     path = Path()
 
@@ -32,7 +32,7 @@ class Habbit:
         Input:
             start_page_url -> Url of start page to scraping;
             path -> Path of scraping;
-            ruksack -> Rucksack of Habbit; (Scraping settings);
+            ruksack -> Rucksack of Hobbit; (Scraping settings);
         """
         self.rucksack = rucksack or default_rucksack
         self.robber = Robber(rucksack)

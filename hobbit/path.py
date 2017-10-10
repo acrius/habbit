@@ -1,7 +1,7 @@
 """
 The module contains classes and functions for writing and traversing the path of the scrapping.
 
-The scrapping path is writen using the :class: `habbit.path.Path`.
+The scrapping path is writen using the :class: `hobbit.path.Path`.
 Example:
     Path(start_actions).to(next_actions, other_path)
                        .to(finish_actions)
@@ -25,7 +25,7 @@ class Path:
     """
     The action path for scrapping.
 
-    The path is a directed graph. The nodes of the graph are steps of `habbit.path.Step` or `habbit.path.Path`.
+    The path is a directed graph. The nodes of the graph are steps of `hobbit.path.Step` or `hobbit.path.Path`.
     Graph content is determined by the adjacency list.
     """
 
@@ -34,9 +34,9 @@ class Path:
         Path containing steps for scraping.
 
         Args:
-            *start_actions (Iterator of :class: `habbit.actions.Action` or :class: `habbit.path.Path`): Actions or paths of actions.
+            *start_actions (Iterator of :class: `hobbit.actions.Action` or :class: `hobbit.path.Path`): Actions or paths of actions.
         """
-        self._adjacencies = {} #List of adjacencies. {`habbit.path.Step`: [related `habbit.path.Step`s]}
+        self._adjacencies = {} #List of adjacencies. {`hobbit.path.Step`: [related `hobbit.path.Step`s]}
         self.steps_count = 0 #The number of steps is the number of vertices of the graph. Used to assign internal IDs to steps.
 
         self.to(*start_actions)
@@ -46,7 +46,7 @@ class Path:
         Add the following steps to the path.
 
         Args:
-            *start_actions (Iterator of :class: `habbit.actions.Action` or :class: `habbit.path.Path`): Actions or paths.
+            *start_actions (Iterator of :class: `hobbit.actions.Action` or :class: `hobbit.path.Path`): Actions or paths.
         """
         last_steps = self.last_nodes
         for action in flatten(actions):
@@ -57,8 +57,8 @@ class Path:
         Add a step or path to the adjacency list.
 
         Args:
-            node (:class: `habbit.path.Step` or :class: `habbit.path.Path`): Node of graph of path.
-            last_steps (Iterable :class: `habbit.path.Step` or :class: `habbit.path.Path`): Last uncomleted nodes.
+            node (:class: `hobbit.path.Step` or :class: `hobbit.path.Path`): Node of graph of path.
+            last_steps (Iterable :class: `hobbit.path.Step` or :class: `hobbit.path.Path`): Last uncomleted nodes.
         """
         for last_step in last_steps:
             self._adjacencies[last_step].add(node)
@@ -68,10 +68,10 @@ class Path:
     @staticmethod
     def _get_node(self, action):
         """
-        Get :class: `habbit.path.Step` for action or :class: `habbit.path.Path` for :class: `habbit.path.Path`.
+        Get :class: `hobbit.path.Step` for action or :class: `hobbit.path.Path` for :class: `hobbit.path.Path`.
 
         Args:
-            action (:class: `habbit.path.Step` or :class: `habbit.path.Path`): Content of node.
+            action (:class: `hobbit.path.Step` or :class: `hobbit.path.Path`): Content of node.
         """
         node = None
         if isinstance(action, Step):
@@ -88,7 +88,7 @@ class Path:
         Get the following steps for the step...
 
         Args:
-            step (:class: `habbit.path.Step`): The step for which you want to get the following steps.
+            step (:class: `hobbit.path.Step`): The step for which you want to get the following steps.
         """
         self.expand_for(step)
         return self._adjacencies.get(step, [])
@@ -103,7 +103,7 @@ class Path:
         Replace the path to its contents.
 
         Args:
-            path (:class: `habbit.path.Path`): The path that needs to be expanded.
+            path (:class: `hobbit.path.Path`): The path that needs to be expanded.
         """
         if isinstance(path, Path):
             for origin in self.get_origins_for(path):
@@ -122,7 +122,7 @@ class Path:
         Get origin steps for current step.
 
         Args:
-            step (:class: `habbit.path.Step` or :class: `habbit.path.Path`): The step for which you want to get the following steps.
+            step (:class: `hobbit.path.Step` or :class: `hobbit.path.Path`): The step for which you want to get the following steps.
         """
         return (origin_step for origin_step, adjacencies in self if step in adjacencies)
 
@@ -181,7 +181,7 @@ def _from(*start_actions):
         Path(start_actions)
 
     Args:
-        *start_actions (Iterator of :class: `habbit.actions.Action` or :class: `habbit.path.Path`): Actions or paths.
+        *start_actions (Iterator of :class: `hobbit.actions.Action` or :class: `hobbit.path.Path`): Actions or paths.
     """
     return Path(start_actions)
 
@@ -213,9 +213,9 @@ class Step:
 
         Args:
             _id (int):                              Unique step identifier in path.
-            action (:class: `habbit.actions.Action`):  The action to process
+            action (:class: `hobbit.actions.Action`):  The action to process
                                                     the result obtained in the previous step.
-            current_path (:class: `habbit.path.Path`): The path corresponding to the current
+            current_path (:class: `hobbit.path.Path`): The path corresponding to the current
                                                     execution of the path.
 
         kwargs:
@@ -239,7 +239,7 @@ class Step:
         After the previous step, the next step is to get the path and the data to process.
 
         Args:
-            current_path (:class: `habbit.path.Path`):            The path corresponding to the current
+            current_path (:class: `hobbit.path.Path`):            The path corresponding to the current
                                                                execution of the path.
             result_of_last_action (:class: `bs4.element.Tag`): The result of the action
                                                                of the previous step.
@@ -257,9 +257,9 @@ class Step:
         """Is the step action terminating?"""
         return self.action.is_finish
 
-    def __call__(self, habbit):
+    def __call__(self, hobbit):
         """Execute the action for the current path with the current data."""
-        return self.action(habbit, self.current_path, self.result_of_last_action)
+        return self.action(hobbit, self.current_path, self.result_of_last_action)
 
     def __hash__(self):
         """Hash to determine the step in the path adjacency list."""
