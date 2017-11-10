@@ -8,7 +8,7 @@ class Robber:
 
     @staticmethod
     def _get_browser(rucksack):
-        if 'BROWSER' in rucksack.__dict__.keys() or not rucksack.BROWSER:
+        if hasattr(rucksack, 'BROWSER') and not rucksack.BROWSER:
             browser = BrowserSubstitute
         else:
             browser = rucksack.BROWSER

@@ -36,6 +36,7 @@ class Action:
         """
         self.args = args
         self.kwargs = kwargs
+        self.is_finish = false
 
     """
     ____________________________________________hash__________________________________________

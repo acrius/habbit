@@ -36,8 +36,8 @@ class gpages(ThreadAction):
         """
         _, parent_tag = parent
         target_tags = parent_tag.find_all(*self.args, **self.kwargs) if self.args else [parent_tag]
-        urls = self._get_urls(frodo.resource, target_tags)
-        yield from self.get_pages(hobbit._robber, urls)
+        urls = self._get_urls(hobbit.resource, target_tags)
+        yield from self.get_pages(hobbit.robber, urls)
 
     @staticmethod
     def _get_urls(resource, target_tags):

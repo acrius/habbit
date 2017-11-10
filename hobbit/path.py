@@ -48,9 +48,8 @@ class Path:
         Args:
             *start_actions (Iterator of :class: `hobbit.actions.Action` or :class: `hobbit.path.Path`): Actions or paths.
         """
-        last_steps = self.last_nodes
         for action in flatten(actions):
-            self._append_node(self._get_node(action), last_nodes)
+            self._append_node(self._get_node(action), self.last_nodes)
 
     def _append_node(self, node, last_steps):
         """
@@ -62,19 +61,18 @@ class Path:
         """
         for last_step in last_steps:
             self._adjacencies[last_step].add(node)
-        if not node.is_finish and node not in self.adjacencies.keys():
+        if not node.is_finish and node not in self._adjacencies.keys():
             self._adjacencies[node] = set()
 
-    @staticmethod
     def _get_node(self, action):
         """
         Get :class: `hobbit.path.Step` for action or :class: `hobbit.path.Path` for :class: `hobbit.path.Path`.
 
         Args:
-            action (:class: `hobbit.path.Step` or :class: `hobbit.path.Path`): Content of node.
+            action (:class: `hobbit.path.Action` or :class: `hobbit.path.Path`): Content of node.
         """
         node = None
-        if isinstance(action, Step):
+        if isinstance(action, Action):
             node = Step(self.steps_count, action, self)
             self.steps_count += 1
         elif isinstance(action, Path):
@@ -225,7 +223,7 @@ class Step:
         if not isinstance(action, Action):
             raise TypeError
 
-        self._id = int(id)
+        self._id = int(_id)
         self.action = action
         self.current_path = current_path
         self._origin_path = current_path # For hash

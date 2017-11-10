@@ -35,18 +35,18 @@ class Hobbit:
             ruksack -> Rucksack of Hobbit; (Scraping settings);
         """
         self.rucksack = rucksack or default_rucksack
-        self.robber = Robber(rucksack)
+        self.robber = Robber(self.rucksack)
 
     """
                                             Run adventure.
     ==============================================================================================
     """
     def run(self):
-        current_steps = self.path.start_steps
-        while current_steps:
-            current_step = current_steps.pop()
+        current_nodes = self.path.start_nodes
+        while current_nodes:
+            current_step = current_nodes.pop()
             result, path = current_step(self)
             if path and result:
                 next_steps = path.next_steps_for(current_step)
                 for next_step in next_steps:
-                    current_steps.append(next_step.reinitialize(path, result))
+                    current_nodes.append(next_step.reinitialize(path, result))
