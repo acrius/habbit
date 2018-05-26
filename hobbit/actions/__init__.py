@@ -1,5 +1,5 @@
 """
-Module contains classes descripbing actions of scraping.
+Module contains classes described actions of scraping.
 For parsing used BeautifulSoup.
 BeautifulSoup documetnation: https://www.crummy.com/software/BeautifulSoup/bs4/doc/.
 """
@@ -9,7 +9,6 @@ from functools import reduce
 from operator import xor
 
 from bs4 import BeautifulSoup
-
 
 """
                                         Base Action classes.
@@ -21,28 +20,30 @@ class Action:
     """
     The base class for scrapping actions.
     """
+
     def __init__(self, *args, **kwargs):
         """
-        Input:
-            filter_function -> Function to filtering result of action;
-                               Input:
-                                    url, bs_tag;
-
+        Args:
             HTML block description
             ----------------------
             Use arguments and named arguments to find_all() method from BeautifulSoup.
-            args -> Argumnets for find_all(), like as html block name - 'a', 'div' and etc;
-            kwargs -> Named arguments for find_all(), like as "attrs={'class': 'some_css_class'}";
+            :param args: Arguments for find_all(), like as html block name - 'a', 'div' and etc;
+            :param kwargs: Named arguments for find_all(), like as "attrs={'class': 'some_css_class'}";
         """
         self.args = args
         self.kwargs = kwargs
-        self.is_finish = false
+        self.is_result = False
 
     """
     ____________________________________________hash__________________________________________
     """
 
     def __hash__(self):
+        """
+        Hash of action is needed to described location of action in path.
+
+        :return: Hash of action.
+        """
         kwargs_hash = self._get_kwargs_hash(self.kwargs)
         args_hash = reduce(xor, map(hash, self.args)) if self.args else hash('')
         return kwargs_hash ^ args_hash
@@ -50,8 +51,8 @@ class Action:
     def _get_kwargs_hash(self, kwargs):
         kwargs_hash = hash('')
         for key, value in kwargs.items():
-            kwargs_hash ^= self._get_kwargs_hash(value) if isinstance(value, MutableMapping)\
-                                                   else hash(key) ^ hash(value)
+            kwargs_hash ^= self._get_kwargs_hash(value) if isinstance(value, MutableMapping) \
+                else hash(key) ^ hash(value)
         return kwargs_hash
 
     @staticmethod
@@ -62,23 +63,26 @@ class Action:
 class ThreadAction(Action):
     """
     The base class for the actions of working with multiple threads.
-    Thread used to load pages with Frodo.
+    Thread used to load pages with `hobbit.robber.Robber`.
     """
+
     def __init__(self, *args, **kwargs):
         """
         Init is similar to the Action init. Added max_workers variable to limit threads count.
         """
         super().__init__(*args, **kwargs)
-        self.max_workers = 20
+        self.max_workers = kwargs.get('max_workers') or 5
 
     def get_pages(self, robber, urls):
         """
         Get BeautifulSoup Tag of pages from urls.
-        Input:
-            frodo -> Frodo object for load page_text;
-            urls -> List of urls;
-        Output:
-            yeild url, tag_of_page -> url of page, BeautifulSoup Tag of page;
+
+        Args:
+            robber(:obj: `hobbit.robber.Robber`): Robber object for load page_text;
+            urls(:list:):
+
+        Yields:
+            url, tag_of_page(:tuple:): url of page, BeautifulSoup Tag of page;
         """
         check_page_repeat = CheckPageRepeat()
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
@@ -86,8 +90,7 @@ class ThreadAction(Action):
             for future in as_completed(future_set):
                 page_text = future.result()
                 page_tag = BeautifulSoup(page_text, 'html.parser')
-                if not check_page_repeat(page_text)\
-                   and self.filter_function(future_set[future], page_tag):
+                if not check_page_repeat(page_text):
                     yield (future_set[future], page_tag)
                 elif check_page_repeat.check_break:
                     break
@@ -95,13 +98,14 @@ class ThreadAction(Action):
 
 class CheckPageRepeat:
     """
-    Class to check of page repeat.
+    Class for check of page repeat.
     """
+
     def __init__(self, max_page_repeat=3):
         """
         Initial.
-        Input:
-            max_page_repeat -> Maximum repeat of page.
+        Args:
+            max_page_repeat(:int:): Maximum repeat of page.
                                If repeat is maximum then check_break is True;
         """
         self.__last_page_text = None
@@ -119,9 +123,9 @@ class CheckPageRepeat:
     def __call__(self, page_text):
         """
         Check repeat page.
-        Input:
-            page_text -> Text of html page;
-        Output:
+        Args:
+            page_text(:str:): Text of html page;
+        Returns:
             True, if repeat, False if not;
         """
         repeat = False
